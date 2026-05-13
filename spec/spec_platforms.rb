@@ -29,14 +29,14 @@ def package_name(os)
   end
 end
 
-def group(os)
+# Use splat operator to satisfy RuboCop Lint/UnusedMethodArgument rule
+def group(*)
   'root'
 end
 
 def common_files(os)
   case os_id(os)
   when %r{redhat-10}
-    # Matches exactly what you have in your fixtures directory
     ['system_auth', 'password_auth']
   when %r{redhat-8}, %r{redhat-9}
     ['system_auth', 'password_auth', 'fingerprint_auth', 'smartcard_auth']
@@ -61,7 +61,6 @@ end
 def dirpath(os)
   case os_id(os)
   when %r{redhat}, %r{sles}
-    # Added trailing slash to fix "/etc/pam.dpassword-auth" path issues
     '/etc/pam.d/'
   else
     '/etc/'
