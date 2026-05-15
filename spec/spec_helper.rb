@@ -8,9 +8,10 @@ require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
 require 'json'
 
+require_relative 'spec_platforms'
+
 include RspecPuppetFacts
 
-# Load baseline default facts
 default_facts = {
   puppetversion: Puppet.version,
   facterversion: Facter.version,
@@ -36,48 +37,45 @@ end
 
 module RspecPuppetFacts
   class << self
-    # Use splat operator to satisfy RuboCop Lint/UnusedMethodArgument rule
-    def on_supported_os(*)
+    def on_supported_os(_opts = {})
       matrix = {}
       facts_file = File.expand_path('../fixtures/facts/redhat-10-x86_64.json', __FILE__)
-      
-      if File.exist?(facts_file)
-        begin
-          matrix['redhat-10-x86_64'] = JSON.parse(File.read(facts_file))
-        rescue => e
-          warn "WARNING: Failed to parse RHEL 10 JSON: #{e.message}"
-        end
-      end
 
-      if matrix.empty?
-        matrix['redhat-10-x86_64'] = {
-          'os' => {
-            'name' => 'RedHat',
-            'family' => 'RedHat',
-            'release' => { 'major' => '10', 'minor' => '0', 'full' => '10.0' }
-          },
-          'operatingsystem' => 'RedHat',
-          'operatingsystemrelease' => '10.0',
-          'operatingsystemmajrelease' => '10',
-          'osfamily' => 'RedHat',
-          'hardwaremodel' => 'x86_64',
-          'architecture' => 'x86_64'
-        }
-      end
+      raw_facts = if File.exist?(facts_file)
+                    JSON.parse(File.read(facts_file))
+                  else
+                    {
+                      'os' => {
+                        'name' => 'RedHat',
+                        'family' => 'RedHat',
+                        'release' => { 'major' => '10', 'minor' => '0', 'full' => '10.0' }
+                      },
+                      'operatingsystem' => 'RedHat',
+                      'operatingsystemrelease' => '10.0',
+                      'operatingsystemmajrelease' => '10',
+                      'osfamily' => 'RedHat',
+                      'hardwaremodel' => 'x86_64',
+                      'architecture' => 'x86_64'
+                    }
+                  end
+
+      processed_facts = raw_facts.dup
+      processed_facts[:os] = raw_facts['os'] if raw_facts['os']
+
+      matrix['redhat-10-x86_64'] = processed_facts
       matrix
     end
   end
 
-  # Use splat operator to satisfy RuboCop Lint/UnusedMethodArgument rule
-  def on_supported_os(*)
-    RspecPuppetFacts.on_supported_os
+  def on_supported_os(opts = {})
+    RspecPuppetFacts.on_supported_os(opts)
   end
 end
 
 RSpec.configure do |c|
   c.default_facts = default_facts
   c.hiera_config = 'spec/hiera.yaml'
-  
+
   c.include RspecPuppetFacts
 
   c.before :each do
