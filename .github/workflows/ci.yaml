@@ -75,6 +75,11 @@ jobs:
           echo '{"ipv6":true,"fixed-cidr-v6":"2001:db8:1::/64"}' | sudo tee /etc/docker/daemon.json
           sudo service docker restart
       # https://github.com/actions/virtual-environments/issues/181#issuecomment-610874237
+      - name: Update APT cache
+        run: sudo apt-get update
+
+      - name: Install AppArmor profiles
+        run: sudo apt-get install apparmor-profiles 
       - name: apparmor
         run: |
             set -x
