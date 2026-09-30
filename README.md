@@ -299,6 +299,7 @@ The Hiera data for some of these platforms can be found in `examples/hiera/eol`.
  * Suse 11
  * Suse 12
  * Suse 15
+ * Suse 16
  * OpenSuSE 13.1
  * Debian 7
  * Debian 8

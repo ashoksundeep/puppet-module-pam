@@ -12,6 +12,7 @@ def os_id(os)
   when %r{^sles-11}   then 'sles-11'
   when %r{^sles-12}   then 'sles-12'
   when %r{^sles-15}   then 'sles-15'
+  when %r{^sles-16}   then 'sles-16'
   when %r{^debian}    then 'debian'
   when %r{^ubuntu}    then 'ubuntu'
   else nil
@@ -82,7 +83,7 @@ def sshd_pam_access(os)
   case os_id(os)
   when %r{redhat}, %r{sles-11}, %r{debian}, %r{ubuntu}
     'required'
-  when %r{sles-9}, %r{sles-10}, %r{sles-12}, %r{sles-15}
+  when %r{sles-9}, %r{sles-10}, %r{sles-12}, %r{sles-15}, %r{sles-16}
     'absent'
   else
     nil
