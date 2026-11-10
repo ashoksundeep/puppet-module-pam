@@ -276,6 +276,10 @@ class pam (
     }
     include pam::limits
 
+    if $package_name == undef {
+      fail('pam::package_name must be defined for the detected operating system')
+    }
+
     package { $package_name:
       ensure => installed,
     }

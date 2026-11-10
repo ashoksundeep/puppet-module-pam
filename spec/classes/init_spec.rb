@@ -30,6 +30,28 @@ describe 'pam' do
         it { is_expected.to contain_package(package).with_ensure('installed') }
       end
 
+      if os_facts[:os]['name'] == 'SLES' &&
+         os_facts[:os]['release']['major'] == '16'
+
+        context 'on SLES 16 compatibility' do
+          it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_package('pam').with_ensure('installed') }
+
+          it { is_expected.to contain_file('pam_d_login') }
+
+          it { is_expected.to contain_file('pam_d_sshd') }
+
+          it { is_expected.to contain_file('pam_common_auth_pc') }
+
+          it { is_expected.to contain_file('pam_common_account_pc') }
+
+          it { is_expected.to contain_file('pam_common_password_pc') }
+
+          it { is_expected.to contain_file('pam_common_session_pc') }
+        end
+      end
+
       common_files.each do |common_file|
         package_name.sort.each do |package|
           it { is_expected.to contain_file('pam_' + common_file + common_files_suffix).that_requires("Package[#{package}]") }
